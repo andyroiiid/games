@@ -1,13 +1,17 @@
 add_subdirectory(dependencies EXCLUDE_FROM_ALL)
 
 add_library(engine STATIC
-        include/engine.h
+        include/non_copyable.h
+        include/movable.h
         include/game.h
         include/system/timer.h
         include/math/vector.h
+        include/gfx/mesh.h
+        include/gfx/shader.h
 
         src/main.cpp
-        src/system/timer.cpp)
+        src/system/timer.cpp
+        src/gfx/shader.cpp)
 
 target_compile_definitions(engine PUBLIC UNICODE WIN32_LEAN_AND_MEAN)
 

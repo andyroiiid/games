@@ -5,12 +5,12 @@
 #ifndef GAMES_GAME_H
 #define GAMES_GAME_H
 
-#include "math/vector.h"
 #include <memory>
-#include <string>
+#include "non_copyable.h"
+#include "math/vector.h"
 
 // use RAII to handle init & shutdown
-struct Game {
+struct Game : NonCopyable {
     Game() = default;
 
     virtual ~Game() = default;
