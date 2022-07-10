@@ -19,7 +19,7 @@ public:
 
     Shader &operator=(Shader &&) noexcept = default;
 
-    Shader(const std::string &vertexSource, const std::string &fragmentSource);
+    Shader(const std::string &vertexInput, const std::string &vertexSource, const std::string &fragmentSource);
 
     ~Shader();
 

@@ -8,6 +8,7 @@ add_library(engine STATIC
         include/math/vector.h
         include/gfx/mesh.h
         include/gfx/shader.h
+        include/gfx/base2d.h
 
         src/main.cpp
         src/system/timer.cpp

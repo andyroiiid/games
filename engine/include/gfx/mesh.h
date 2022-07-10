@@ -10,6 +10,10 @@
 
 #include "movable.h"
 
+/* Here I want to ensure different types of meshes don't get mixed up.
+ * That's why this whole class is a template.
+ */
+
 template<typename V>
 class Mesh {
 public:

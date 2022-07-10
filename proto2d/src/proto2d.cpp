@@ -16,19 +16,16 @@ Proto2D::Proto2D() {
     LOG_GL_STRING(GL_RENDERER);
 #undef LOG_GL_STRING
 
-    const Vertex2D vertices[] = {
-            {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-            {{0.5f,  -0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-            {{0.0,   0.5f},  {0.0f, 0.0f, 1.0f, 1.0f}},
+    const std::vector<Vertex2D> vertices{
+            {{-0.5f, -0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
+            {{0.5f,  -0.5f}, {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+            {{-0.5f, 0.5f},  {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+            {{0.5f,  0.5f},  {1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}},
     };
-    m_mesh = Mesh2D(3, vertices, GL_TRIANGLE_STRIP);
+    m_mesh = Mesh2D(vertices, GL_TRIANGLE_STRIP);
 
-    m_shader = Shader(
+    m_shader = Shader2D(
             R"GLSL(
-#version 450 core
-layout(location = 0) in vec2 aPosition;
-layout(location = 1) in vec4 aColor;
-
 layout(location = 0) out vec4 vColor;
 
 void main() {
@@ -37,7 +34,6 @@ void main() {
 }
 )GLSL",
             R"GLSL(
-#version 450 core
 layout(location = 0) in vec4 vColor;
 
 layout(location = 0) out vec4 fColor;

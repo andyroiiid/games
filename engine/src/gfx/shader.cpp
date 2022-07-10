@@ -4,10 +4,12 @@
 
 #include "gfx/shader.h"
 
-static GLuint createShader(GLenum type, const char *source) {
+#include <vector>
+
+static GLuint CreateShader(GLenum type, const std::vector<const char *> &&source) {
     GLuint shader = glCreateShader(type);
 
-    glShaderSource(shader, 1, &source, nullptr);
+    glShaderSource(shader, static_cast<GLsizei>(source.size()), source.data(), nullptr);
     glCompileShader(shader);
 
     GLint compileStatus = 0;
@@ -26,7 +28,7 @@ static GLuint createShader(GLenum type, const char *source) {
     return shader;
 }
 
-static GLuint createProgram(const std::initializer_list<GLuint> &shaders) {
+static GLuint CreateProgram(const std::initializer_list<GLuint> &shaders) {
     GLuint program = glCreateProgram();
 
     for (GLuint shader: shaders)
@@ -50,10 +52,22 @@ static GLuint createProgram(const std::initializer_list<GLuint> &shaders) {
     return program;
 }
 
-Shader::Shader(const std::string &vertexSource, const std::string &fragmentSource) {
-    GLuint vertexShader   = createShader(GL_VERTEX_SHADER, vertexSource.c_str());
-    GLuint fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentSource.c_str());
-    m_program = createProgram({vertexShader, fragmentShader});
+Shader::Shader(const std::string &vertexInput, const std::string &vertexSource, const std::string &fragmentSource) {
+    const char *VERSION_STRING = "#version 450 core";
+
+    GLuint vertexShader = CreateShader(GL_VERTEX_SHADER, {
+            VERSION_STRING,
+            vertexInput.c_str(),
+            vertexSource.c_str()
+    });
+
+    GLuint fragmentShader = CreateShader(GL_FRAGMENT_SHADER, {
+            VERSION_STRING,
+            fragmentSource.c_str()
+    });
+
+    m_program = CreateProgram({vertexShader, fragmentShader});
+
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 }
