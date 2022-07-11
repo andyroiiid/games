@@ -7,8 +7,7 @@
 
 #include "game.h"
 #include "system/job_system.h"
-#include "gfx/base2d.h"
-#include "gfx/texture.h"
+#include "text_renderer.h"
 
 class Proto2D : public Game {
 public:
@@ -23,54 +22,8 @@ public:
     void OnClose() override;
 
 private:
-    Mesh2D   m_mesh;
-    Shader2D m_shader;
-    Texture  m_texture;
-
-    class MeshLoadJob : public Job {
-    public:
-        explicit MeshLoadJob(Mesh2D &mesh) : m_mesh(mesh) {}
-
-        void Execute() override;
-
-        void Finish() override;
-
-    private:
-        std::vector<Vertex2D> m_vertices;
-
-        Mesh2D &m_mesh;
-    };
-
-    class ShaderLoadJob : public Job {
-    public:
-        explicit ShaderLoadJob(Shader2D &shader) : m_shader(shader) {}
-
-        void Execute() override;
-
-        void Finish() override;
-
-    private:
-        std::string m_vertexSource;
-        std::string m_fragmentSource;
-
-        Shader2D &m_shader;
-    };
-
-    class TextureLoadJob : public Job {
-    public:
-        explicit TextureLoadJob(Texture &texture) : m_texture(texture) {}
-
-        void Execute() override;
-
-        void Finish() override;
-
-    private:
-        Texture &m_texture;
-    };
-
-    // job system will destruct before resources
-    // so it's safe to store references in jobs
-    JobSystem m_jobSystem;
+    JobSystem    m_jobSystem;
+    TextRenderer m_textRenderer;
 };
 
 #endif //GAMES_PROTO2D_H

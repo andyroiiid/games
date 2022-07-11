@@ -13,6 +13,7 @@ add_library(engine STATIC
         include/gfx/base2d.h
         include/gfx/texture.h
 
+        src/logging.cpp
         src/main.cpp
         src/system/timer.cpp
         src/system/job_system.cpp

@@ -74,6 +74,8 @@ struct Vec2 {
 
 static constexpr Vec2 operator*(const float f, const Vec2 &v) { return v * f; }
 
+static constexpr Vec2 operator/(const float f, const Vec2 &v) { return {f / v.x, f / v.y}; }
+
 static_assert(sizeof(Vec2) == 8);
 
 
@@ -139,6 +141,8 @@ struct Vec3 {
 };
 
 static constexpr Vec3 operator*(const float f, const Vec3 &v) { return v * f; }
+
+static constexpr Vec3 operator/(const float f, const Vec3 &v) { return {f / v.x, f / v.y, f / v.z}; }
 
 static_assert(sizeof(Vec3) == 12);
 
@@ -209,6 +213,8 @@ struct Vec4 {
 
 static constexpr Vec4 operator*(const float f, const Vec4 &v) { return v * f; }
 
+static constexpr Vec4 operator/(const float f, const Vec4 &v) { return {f / v.x, f / v.y, f / v.z, f / v.w}; }
+
 static_assert(sizeof(Vec4) == 16);
 
 
@@ -234,6 +240,10 @@ struct IntVec2 {
     static constexpr IntVec2 UnitX() { return {1, 0}; }
 
     static constexpr IntVec2 UnitY() { return {0, 1}; }
+
+    // casts
+
+    constexpr explicit operator Vec2() const;
 };
 
 
@@ -250,6 +260,8 @@ constexpr Vec3::operator Vec4() const { return {x, y, 0, 0}; }
 constexpr Vec4::operator Vec2() const { return {x, y}; }
 
 constexpr Vec4::operator Vec3() const { return {x, y, z}; }
+
+constexpr IntVec2::operator Vec2() const { return {static_cast<float>(x), static_cast<float>(y)}; }
 
 
 // vector math
