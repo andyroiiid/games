@@ -15,44 +15,20 @@ Proto2D::Proto2D() {
     LOG_GL_STRING(GL_VENDOR);
     LOG_GL_STRING(GL_RENDERER);
 #undef LOG_GL_STRING
-
-    const std::vector<Vertex2D> vertices{
-            {{-0.5f, -0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-            {{0.5f,  -0.5f}, {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-            {{-0.5f, 0.5f},  {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-            {{0.5f,  0.5f},  {1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}},
-    };
-    m_mesh = Mesh2D(vertices, GL_TRIANGLE_STRIP);
-
-    m_shader = Shader2D(
-            R"GLSL(
-layout(location = 0) out vec4 vColor;
-
-void main() {
-    gl_Position = vec4(aPosition, 0, 1);
-    vColor = aColor;
-}
-)GLSL",
-            R"GLSL(
-layout(location = 0) in vec4 vColor;
-
-layout(location = 0) out vec4 fColor;
-
-void main() {
-    fColor = vColor;
-}
-)GLSL"
-    );
+    m_jobSystem.QueueJob(std::make_unique<MeshLoadJob>(m_mesh));
+    m_jobSystem.QueueJob(std::make_unique<ShaderLoadJob>(m_shader));
 }
 
 Proto2D::~Proto2D() = default;
 
 void Proto2D::OnResize(const IntVec2 &size) {
-    fprintf(stderr, "%d, %d\n", size.x, size.y);
+    fprintf(stderr, "resize %d, %d\n", size.x, size.y);
     glViewport(0, 0, size.x, size.y);
 }
 
 void Proto2D::OnTick(float deltaTime) {
+    m_jobSystem.ProcessFinishedJobs();
+
     const GLfloat clearColor[] = {0.4f, 0.8f, 1.0f, 1.0f};
     glClearBufferfv(GL_COLOR, 0, clearColor);
 
@@ -64,4 +40,44 @@ void Proto2D::OnTick(float deltaTime) {
 
 void Proto2D::OnClose() {
     RequestQuit();
+}
+
+void Proto2D::MeshLoadJob::Execute() {
+    m_vertices = {
+            {{-0.5f, -0.5f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
+            {{0.5f,  -0.5f}, {1.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
+            {{-0.5f, 0.5f},  {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f, 1.0f}},
+            {{0.5f,  0.5f},  {1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}},
+    };
+}
+
+void Proto2D::MeshLoadJob::Finish() {
+    m_mesh = Mesh2D(m_vertices, GL_TRIANGLE_STRIP);
+    (void) m_mesh; // unused
+}
+
+void Proto2D::ShaderLoadJob::Execute() {
+    m_vertexSource = R"GLSL(
+layout(location = 0) out vec4 vColor;
+
+void main() {
+    gl_Position = vec4(aPosition, 0, 1);
+    vColor = aColor;
+}
+)GLSL";
+
+    m_fragmentSource = R"GLSL(
+layout(location = 0) in vec4 vColor;
+
+layout(location = 0) out vec4 fColor;
+
+void main() {
+    fColor = vColor;
+}
+)GLSL";
+}
+
+void Proto2D::ShaderLoadJob::Finish() {
+    m_shader = Shader2D(m_vertexSource, m_fragmentSource);
+    (void) m_shader; // unused
 }

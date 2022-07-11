@@ -5,6 +5,7 @@ add_library(engine STATIC
         include/movable.h
         include/game.h
         include/system/timer.h
+        include/system/job_system.h
         include/math/vector.h
         include/gfx/mesh.h
         include/gfx/shader.h
@@ -12,6 +13,7 @@ add_library(engine STATIC
 
         src/main.cpp
         src/system/timer.cpp
+        src/system/job_system.cpp
         src/gfx/shader.cpp)
 
 target_compile_definitions(engine PUBLIC UNICODE WIN32_LEAN_AND_MEAN)
