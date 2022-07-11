@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "logging.h"
+
 static GLuint CreateShader(GLenum type, const std::vector<const char *> &&source) {
     GLuint shader = glCreateShader(type);
 
@@ -19,7 +21,7 @@ static GLuint CreateShader(GLenum type, const std::vector<const char *> &&source
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
         auto infoLog = new GLchar[infoLogLength];
         glGetShaderInfoLog(shader, infoLogLength, &infoLogLength, infoLog);
-        fprintf(stderr, "failed to load shader: %s\n", infoLog);
+        LogInfo("failed to load shader: %s\n", infoLog);
         delete[] infoLog;
         glDeleteShader(shader);
         return 0;
@@ -41,7 +43,7 @@ static GLuint CreateProgram(const std::initializer_list<GLuint> &shaders) {
         GLint infoLogLength = 0;
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
         auto infoLog = new GLchar[infoLogLength];
-        fprintf(stderr, "failed to link program: %s\n", infoLog);
+        LogInfo("failed to link program: %s\n", infoLog);
         delete[] infoLog;
         glDeleteProgram(program);
         return 0;

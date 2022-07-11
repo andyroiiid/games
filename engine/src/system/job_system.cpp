@@ -4,6 +4,8 @@
 
 #include "system/job_system.h"
 
+#include "logging.h"
+
 JobSystem::JobSystem() {
     const unsigned int numThreads = std::max(1u, std::thread::hardware_concurrency());
 
@@ -71,7 +73,7 @@ void JobSystem::ProcessFinishedJobs() {
 }
 
 void JobSystem::Worker(int i) {
-    fprintf(stderr, "starting worker #%d\n", i);
+    LogInfo("starting worker #%d\n", i);
     while (true) {
         std::unique_ptr<Job> job = FetchPending();
         if (job) {
@@ -81,5 +83,5 @@ void JobSystem::Worker(int i) {
             break;
         }
     }
-    fprintf(stderr, "stopping worker #%d\n", i);
+    LogInfo("stopping worker #%d\n", i);
 }

@@ -3,6 +3,7 @@ add_subdirectory(dependencies EXCLUDE_FROM_ALL)
 add_library(engine STATIC
         include/non_copyable.h
         include/movable.h
+        include/logging.h
         include/game.h
         include/system/timer.h
         include/system/job_system.h

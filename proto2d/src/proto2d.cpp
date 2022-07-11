@@ -4,12 +4,14 @@
 
 #include "proto2d.h"
 
+#include "logging.h"
+
 std::unique_ptr<Game> NewGame() {
     return std::make_unique<Proto2D>();
 }
 
 Proto2D::Proto2D() {
-#define LOG_GL_STRING(x) fprintf(stderr, #x ": %s\n", glGetString(x))
+#define LOG_GL_STRING(x) LogInfo(#x ": %s\n", glGetString(x))
     LOG_GL_STRING(GL_VERSION);
     LOG_GL_STRING(GL_SHADING_LANGUAGE_VERSION);
     LOG_GL_STRING(GL_VENDOR);
@@ -22,7 +24,7 @@ Proto2D::Proto2D() {
 Proto2D::~Proto2D() = default;
 
 void Proto2D::OnResize(const IntVec2 &size) {
-    fprintf(stderr, "resize %d, %d\n", size.x, size.y);
+    LogInfo("resize %d, %d\n", size.x, size.y);
     glViewport(0, 0, size.x, size.y);
 }
 
