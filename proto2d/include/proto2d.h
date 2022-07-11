@@ -8,6 +8,7 @@
 #include "game.h"
 #include "system/job_system.h"
 #include "gfx/base2d.h"
+#include "gfx/texture.h"
 
 class Proto2D : public Game {
 public:
@@ -24,6 +25,7 @@ public:
 private:
     Mesh2D   m_mesh;
     Shader2D m_shader;
+    Texture  m_texture;
 
     class MeshLoadJob : public Job {
     public:
@@ -52,6 +54,18 @@ private:
         std::string m_fragmentSource;
 
         Shader2D &m_shader;
+    };
+
+    class TextureLoadJob : public Job {
+    public:
+        explicit TextureLoadJob(Texture &texture) : m_texture(texture) {}
+
+        void Execute() override;
+
+        void Finish() override;
+
+    private:
+        Texture &m_texture;
     };
 
     // job system will destruct before resources

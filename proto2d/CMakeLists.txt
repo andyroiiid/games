@@ -1,4 +1,8 @@
-add_executable(proto2d WIN32 src/proto2d.cpp)
+add_executable(proto2d WIN32
+        include/monogram_font.h
+        include/proto2d.h
+
+        src/proto2d.cpp)
 
 target_include_directories(proto2d PRIVATE include)
 
