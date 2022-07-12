@@ -22,7 +22,7 @@ static inline void LogInfo(const char *format, Args &&...args) {
 }
 
 template<class Func>
-static inline void ForEachLog(Func &&f, size_t limit = 16) {
+static inline void ForEachLog(Func &&f, size_t limit = 32) {
     std::lock_guard<std::mutex> lk(g_logsMutex);
 
     size_t numLogs   = std::min(g_logs.size(), limit);

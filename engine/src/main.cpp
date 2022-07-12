@@ -7,6 +7,7 @@
 #include <glad/wgl.h>
 
 #include "game.h"
+#include "keyboard.h"
 #include "system/timer.h"
 
 static auto ENGINE_NAME = TEXT("Game Engine");
@@ -29,9 +30,16 @@ LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     }
 
     switch (message) {
+    case WM_ACTIVATE:
+    case WM_ACTIVATEAPP:
+    case WM_KEYDOWN:
+    case WM_KEYUP:
+        Keyboard::ProcessMessage(message, wParam, lParam);
+        break;
     case WM_SYSKEYDOWN:
     case WM_SYSKEYUP:
     case WM_SYSCHAR:
+        Keyboard::ProcessMessage(message, wParam, lParam);
         // pressing alt will trigger the system menu and the game will freeze
         // here I simply disabled all system shortcuts
         // there might be a better way to handle this
@@ -192,6 +200,8 @@ void MainLoop(HWND hWnd, HDC hdc) {
                 break;
             }
         }
+
+        Keyboard::Update();
 
         game->OnTick(static_cast<float>(timer.tick()));
 

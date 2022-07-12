@@ -3,8 +3,10 @@ add_subdirectory(dependencies EXCLUDE_FROM_ALL)
 add_library(engine STATIC
         include/non_copyable.h
         include/movable.h
+        include/singleton.h
         include/logging.h
         include/game.h
+        include/keyboard.h
         include/system/timer.h
         include/system/job_system.h
         include/math/vector.h
@@ -16,6 +18,7 @@ add_library(engine STATIC
 
         src/logging.cpp
         src/main.cpp
+        src/keyboard.cpp
         src/system/timer.cpp
         src/system/job_system.cpp
         src/gfx/shader.cpp

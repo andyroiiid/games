@@ -10,7 +10,7 @@
 
 class TextRenderer {
 public:
-    static constexpr float DefaultScale = 2.0f;
+    static constexpr float DefaultScale = 1.0f;
 
     TextRenderer();
 

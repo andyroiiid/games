@@ -5,6 +5,7 @@
 #include "proto2d.h"
 
 #include "logging.h"
+#include "keyboard.h"
 
 std::unique_ptr<Game> NewGame() {
     return std::make_unique<Proto2D>();
@@ -28,7 +29,28 @@ void Proto2D::OnResize(const IntVec2 &size) {
 }
 
 void Proto2D::OnTick(float deltaTime) {
-    const GLfloat clearColor[] = {0.4f, 0.4f, 0.4f, 1.0f};
+#define TEST_KEY(k) do { \
+        if (Keyboard::GetKeyDown(Keyboard::k)) { \
+            LogInfo(#k " pressed"); \
+        } else if (Keyboard::GetKeyUp(Keyboard::k)) { \
+            LogInfo(#k " released"); \
+        } \
+    } while (false)
+
+    TEST_KEY(W);
+    TEST_KEY(A);
+    TEST_KEY(S);
+    TEST_KEY(D);
+    TEST_KEY(LeftShift);
+    TEST_KEY(RightShift);
+    TEST_KEY(LeftAlt);
+    TEST_KEY(RightAlt);
+    TEST_KEY(LeftControl);
+    TEST_KEY(RightControl);
+    TEST_KEY(Space);
+    TEST_KEY(LeftWindows);
+
+    static const GLfloat clearColor[] = {0.4f, 0.4f, 0.4f, 1.0f};
     glClearBufferfv(GL_COLOR, 0, clearColor);
 
     glEnable(GL_BLEND);
