@@ -57,13 +57,19 @@ void TextRenderer::OnResize(const IntVec2 &size) {
     m_screenScale = 1.0f / Vec2(size);
 }
 
-void TextRenderer::DrawText(const std::string &text, float x, float y, float scale) {
+void TextRenderer::DrawText(const std::string &text, const float x, const float y, float scale) {
     const Vec2 scaledGlyphSize = m_glyphSize * scale;
 
+    float currentX = x;
     m_instances.clear();
     for (char c: text) {
+        if (isspace(c)) {
+            currentX += scaledGlyphSize.x;
+            continue;
+        }
+
         Vec4 screenRect{
-                x * m_screenScale.x,
+                currentX * m_screenScale.x,
                 y * m_screenScale.y,
                 scaledGlyphSize.x * m_screenScale.x,
                 scaledGlyphSize.y * m_screenScale.y
@@ -75,7 +81,7 @@ void TextRenderer::DrawText(const std::string &text, float x, float y, float sca
                 TEXCOORD_PER_GLYPH_Y
         };
         m_instances.push_back({screenRect, textureRect});
-        x += m_glyphSize.x * scale;
+        currentX += scaledGlyphSize.x;
     }
 
     m_shader.Use();
