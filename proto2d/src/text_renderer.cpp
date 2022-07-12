@@ -14,19 +14,20 @@ TextRenderer::TextRenderer() {
             {{1, 1}, {1, 1}, {1, 1, 1, 1}},
     };
 
-    m_mesh = Mesh2D(vertices, GL_TRIANGLE_STRIP);
+    m_mesh = InstancedMeshGlyph(vertices, GL_TRIANGLE_STRIP);
 
     m_shader = Shader2D(R"GLSL(
+layout(location = 3) in vec4 iScreenRect;
+layout(location = 4) in vec4 iTextureRect;
+
 layout(location = 0) out vec2 vTexCoord;
 layout(location = 1) out vec4 vColor;
 
-layout(location = 0) uniform vec4 uScreenRect;
-layout(location = 1) uniform vec4 uTextureRect;
-
 void main() {
-    vec2 position = (uScreenRect.xy + uScreenRect.zw * aPosition) * 2 - 1; // map from 0~1 to -1~1
+    vec2 position = iScreenRect.xy + iScreenRect.zw * aPosition;
+    position = position * 2 - 1; // map from 0~1 to -1~1
     gl_Position = vec4(position, 0, 1);
-    vTexCoord = uTextureRect.xy + uTextureRect.zw * aTexCoord;
+    vTexCoord = iTextureRect.xy + iTextureRect.zw * aTexCoord;
     vColor = aColor;
 }
 )GLSL", R"GLSL(
@@ -42,12 +43,14 @@ void main() {
 }
 )GLSL");
 
-    m_screenRectLocation  = m_shader.GetUniformLocation("uScreenRect");
-    m_textureRectLocation = m_shader.GetUniformLocation("uTextureRect");
-
     m_texture = Texture(MONOGRAM_FONT_WIDTH, MONOGRAM_FONT_HEIGHT, MONOGRAM_FONT_DATA);
 
-    m_glyphSize = Vec2(static_cast<float>(m_texture.Width()) / 16, static_cast<float>(m_texture.Height()) / 8);
+    m_glyphSize = Vec2(
+            static_cast<float>(m_texture.Width()) * TEXCOORD_PER_GLYPH_X,
+            static_cast<float>(m_texture.Height()) * TEXCOORD_PER_GLYPH_Y
+    );
+
+    m_instances.reserve(1024);
 }
 
 void TextRenderer::OnResize(const IntVec2 &size) {
@@ -55,37 +58,28 @@ void TextRenderer::OnResize(const IntVec2 &size) {
 }
 
 void TextRenderer::DrawText(const std::string &text, float x, float y, float scale) {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const Vec2 scaledGlyphSize = m_glyphSize * scale;
 
-    m_shader.Use();
-    m_texture.Bind(0);
-
+    m_instances.clear();
     for (char c: text) {
-        m_shader.SetUniform(m_screenRectLocation, {
+        Vec4 screenRect{
                 x * m_screenScale.x,
                 y * m_screenScale.y,
-                m_glyphSize.x * m_screenScale.x * scale,
-                m_glyphSize.y * m_screenScale.y * scale,
-        });
-
-        // these are hard coded values for 16 x 8 glyphs texture
-        m_shader.SetUniform(m_textureRectLocation, {
-                static_cast<float>(c % 16) * 0.0625f,
-                static_cast<float>(c / 16) * 0.125f, // NOLINT(bugprone-integer-division)
-                0.0625f,
-                0.125f
-        });
-
-        m_mesh.BindAndDraw();
-
+                scaledGlyphSize.x * m_screenScale.x,
+                scaledGlyphSize.y * m_screenScale.y
+        };
+        Vec4 textureRect{
+                static_cast<float>(c % NUM_GLYPHS_X) * TEXCOORD_PER_GLYPH_X,
+                static_cast<float>(c / NUM_GLYPHS_X) * TEXCOORD_PER_GLYPH_Y, // NOLINT(bugprone-integer-division)
+                TEXCOORD_PER_GLYPH_X,
+                TEXCOORD_PER_GLYPH_Y
+        };
+        m_instances.push_back({screenRect, textureRect});
         x += m_glyphSize.x * scale;
     }
 
-    glBindTextureUnit(0, 0);
-    glBindVertexArray(0);
-    glUseProgram(0);
-
-    glBlendFunc(GL_ONE, GL_ZERO);
-    glDisable(GL_BLEND);
+    m_shader.Use();
+    m_texture.Bind(0);
+    m_mesh.UpdateInstanceData(m_instances);
+    m_mesh.BindAndDrawInstanced();
 }

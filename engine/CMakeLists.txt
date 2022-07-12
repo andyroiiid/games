@@ -9,6 +9,7 @@ add_library(engine STATIC
         include/system/job_system.h
         include/math/vector.h
         include/gfx/mesh.h
+        include/gfx/instanced_mesh.h
         include/gfx/shader.h
         include/gfx/base2d.h
         include/gfx/texture.h

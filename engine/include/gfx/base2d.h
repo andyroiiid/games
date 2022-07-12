@@ -5,7 +5,7 @@
 #ifndef GAMES_BASE2D_H
 #define GAMES_BASE2D_H
 
-#include "gfx/mesh.h"
+#include "gfx/instanced_mesh.h"
 #include "gfx/shader.h"
 
 struct Vertex2D {
@@ -29,6 +29,9 @@ struct Vertex2D {
 };
 
 using Mesh2D = Mesh<Vertex2D>;
+
+template<class I>
+using InstancedMesh2D = InstancedMesh<Vertex2D, I>;
 
 class Shader2D : public Shader {
 public:

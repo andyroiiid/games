@@ -148,7 +148,7 @@ static_assert(sizeof(Vec3) == 12);
 
 
 // Vec4
-struct Vec4 {
+struct alignas(16) Vec4 {
     float x = 0.0f;
     float y = 0.0f;
     float z = 0.0f;

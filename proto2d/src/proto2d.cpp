@@ -31,11 +31,20 @@ void Proto2D::OnTick(float deltaTime) {
     const GLfloat clearColor[] = {0.4f, 0.4f, 0.4f, 1.0f};
     glClearBufferfv(GL_COLOR, 0, clearColor);
 
-    float textHeight = m_textRenderer.GlyphSize().y;
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    float textHeight = m_textRenderer.GlyphSize().y;
     ForEachLog([this, textHeight](int i, const std::string &log) {
         m_textRenderer.DrawText(log, 0, static_cast<float>(i) * textHeight);
     });
+
+    glBindVertexArray(0);
+    glBindTextureUnit(0, 0);
+    glUseProgram(0);
+
+    glBlendFunc(GL_ONE, GL_ZERO);
+    glDisable(GL_BLEND);
 }
 
 void Proto2D::OnClose() {
