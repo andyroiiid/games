@@ -16,6 +16,11 @@ void RequestQuit() {
     PostQuitMessage(0);
 }
 
+void SetVSync(bool enabled) {
+    if (!GLAD_WGL_EXT_swap_control) return;
+    wglSwapIntervalEXT(enabled ? (GLAD_WGL_EXT_swap_control_tear ? -1 : 1) : 0);
+}
+
 IntVec2 CalcAdjustedWindowSize(const IntVec2 &size, DWORD dwStyle) {
     RECT rc{0, 0, size.x, size.y};
     AdjustWindowRect(&rc, dwStyle, false);

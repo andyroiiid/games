@@ -25,6 +25,9 @@ struct Game : NonCopyable {
 // post a quit request to message loop
 void RequestQuit();
 
+// enable/disable vsync
+void SetVSync(bool enabled);
+
 // allocates a new Game object
 // implemented by actual game code
 std::unique_ptr<Game> NewGame();

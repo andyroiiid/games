@@ -25,12 +25,16 @@ int GLAD_WGL_ARB_create_context = 0;
 int GLAD_WGL_ARB_create_context_profile = 0;
 int GLAD_WGL_ARB_extensions_string = 0;
 int GLAD_WGL_EXT_extensions_string = 0;
+int GLAD_WGL_EXT_swap_control = 0;
+int GLAD_WGL_EXT_swap_control_tear = 0;
 
 
 
 PFNWGLCREATECONTEXTATTRIBSARBPROC glad_wglCreateContextAttribsARB = NULL;
 PFNWGLGETEXTENSIONSSTRINGARBPROC glad_wglGetExtensionsStringARB = NULL;
 PFNWGLGETEXTENSIONSSTRINGEXTPROC glad_wglGetExtensionsStringEXT = NULL;
+PFNWGLGETSWAPINTERVALEXTPROC glad_wglGetSwapIntervalEXT = NULL;
+PFNWGLSWAPINTERVALEXTPROC glad_wglSwapIntervalEXT = NULL;
 
 
 static void glad_wgl_load_WGL_ARB_create_context(GLADuserptrloadfunc load, void *userptr) {
@@ -44,6 +48,11 @@ static void glad_wgl_load_WGL_ARB_extensions_string(GLADuserptrloadfunc load, vo
 static void glad_wgl_load_WGL_EXT_extensions_string(GLADuserptrloadfunc load, void *userptr) {
     if(!GLAD_WGL_EXT_extensions_string) return;
     glad_wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC) load(userptr, "wglGetExtensionsStringEXT");
+}
+static void glad_wgl_load_WGL_EXT_swap_control(GLADuserptrloadfunc load, void *userptr) {
+    if(!GLAD_WGL_EXT_swap_control) return;
+    glad_wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC) load(userptr, "wglGetSwapIntervalEXT");
+    glad_wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) load(userptr, "wglSwapIntervalEXT");
 }
 
 
@@ -90,6 +99,8 @@ static int glad_wgl_find_extensions_wgl(HDC hdc) {
     GLAD_WGL_ARB_create_context_profile = glad_wgl_has_extension(hdc, "WGL_ARB_create_context_profile");
     GLAD_WGL_ARB_extensions_string = glad_wgl_has_extension(hdc, "WGL_ARB_extensions_string");
     GLAD_WGL_EXT_extensions_string = glad_wgl_has_extension(hdc, "WGL_EXT_extensions_string");
+    GLAD_WGL_EXT_swap_control = glad_wgl_has_extension(hdc, "WGL_EXT_swap_control");
+    GLAD_WGL_EXT_swap_control_tear = glad_wgl_has_extension(hdc, "WGL_EXT_swap_control_tear");
     return 1;
 }
 
@@ -111,6 +122,7 @@ int gladLoadWGLUserPtr(HDC hdc, GLADuserptrloadfunc load, void *userptr) {
     glad_wgl_load_WGL_ARB_create_context(load, userptr);
     glad_wgl_load_WGL_ARB_extensions_string(load, userptr);
     glad_wgl_load_WGL_EXT_extensions_string(load, userptr);
+    glad_wgl_load_WGL_EXT_swap_control(load, userptr);
 
 
     return version;

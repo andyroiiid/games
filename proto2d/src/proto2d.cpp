@@ -18,12 +18,14 @@ Proto2D::Proto2D() {
     LOG_GL_STRING(GL_VENDOR);
     LOG_GL_STRING(GL_RENDERER);
 #undef LOG_GL_STRING
+
+    SetVSync(m_vsync);
 }
 
 Proto2D::~Proto2D() = default;
 
 void Proto2D::OnResize(const IntVec2 &size) {
-    LogInfo("resize %d, %d\n", size.x, size.y);
+    m_size = Vec2(size);
     glViewport(0, 0, size.x, size.y);
     m_textRenderer.OnResize(size);
 }
@@ -50,13 +52,22 @@ void Proto2D::OnTick(float deltaTime) {
     TEST_KEY(Space);
     TEST_KEY(LeftWindows);
 
+    if (Keyboard::GetKey(Keyboard::LeftControl) && Keyboard::GetKeyDown(Keyboard::V)) {
+        m_vsync = !m_vsync;
+        SetVSync(m_vsync);
+    }
+
+    char buffer[1024];
+    sprintf_s(buffer, "fps = %.2f, size = %.0f x %.0f", 1.0f / deltaTime, m_size.x, m_size.y);
+
     static const GLfloat clearColor[] = {0.4f, 0.4f, 0.4f, 1.0f};
     glClearBufferfv(GL_COLOR, 0, clearColor);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    float textHeight = m_textRenderer.GlyphSize().y;
+    const float textHeight = m_textRenderer.GlyphSize().y;
+    m_textRenderer.DrawText(buffer, 0, m_size.y - textHeight);
     ForEachLog([this, textHeight](int i, const std::string &log) {
         m_textRenderer.DrawText(log, 0, static_cast<float>(i) * textHeight);
     });

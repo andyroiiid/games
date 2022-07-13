@@ -22,7 +22,8 @@ public:
     void OnClose() override;
 
 private:
-    JobSystem    m_jobSystem;
+    bool         m_vsync = true;
+    Vec2         m_size;
     TextRenderer m_textRenderer;
 };
 
