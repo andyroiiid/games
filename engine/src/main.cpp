@@ -7,7 +7,7 @@
 #include <glad/wgl.h>
 
 #include "game.h"
-#include "keyboard.h"
+#include "input/keyboard.h"
 #include "system/timer.h"
 
 static auto ENGINE_NAME = TEXT("Game Engine");

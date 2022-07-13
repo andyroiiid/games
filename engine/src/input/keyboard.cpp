@@ -2,7 +2,7 @@
 // Created by Andrew Huang on 7/12/2022.
 //
 
-#include "keyboard.h"
+#include "input/keyboard.h"
 
 // Adapted from DirectXTK
 
