@@ -4,5 +4,5 @@
 
 #include "logging.h"
 
-std::mutex               g_logsMutex;
-std::vector<std::string> g_logs;
+std::mutex           g_logsMutex;
+std::deque<LogEntry> g_logs; // NOLINT(cert-err58-cpp)

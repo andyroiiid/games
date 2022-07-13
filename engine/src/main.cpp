@@ -83,7 +83,7 @@ LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
         break;
     case WM_GETMINMAXINFO:
         if (lParam) {
-            IntVec2 size = CalcAdjustedWindowSize({320, 240}, WS_OVERLAPPEDWINDOW);
+            IntVec2 size = CalcAdjustedWindowSize({640, 480}, WS_OVERLAPPEDWINDOW);
 
             auto info = reinterpret_cast<MINMAXINFO *>(lParam);
             info->ptMinTrackSize.x = size.x;

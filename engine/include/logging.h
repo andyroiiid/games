@@ -6,32 +6,64 @@
 #define GAMES_LOG_H
 
 #include <mutex>
-#include <vector>
+#include <deque>
 
-extern std::mutex               g_logsMutex;
-extern std::vector<std::string> g_logs;
+static constexpr int LOG_MAX_CHARS = 512;
+static constexpr int LOG_LIMITS    = 16;
 
-static constexpr int LOG_MAX_CHARS = 1024;
+enum class LogLevel : uint8_t {
+    Debug,
+    Verbose,
+    Info,
+    Warning,
+    Error,
+};
 
-template<class... Args>
-static inline void LogInfo(const char *format, Args &&...args) {
-    char buffer[LOG_MAX_CHARS];
-    sprintf_s(buffer, format, args...);
+struct LogEntry {
+    LogLevel level;
+    char     message[LOG_MAX_CHARS];
+};
+
+extern std::mutex           g_logsMutex;
+extern std::deque<LogEntry> g_logs;
+
+template<LogLevel level, class... Args>
+static inline void Log(const char *format, Args &&...args) {
+    LogEntry log{level};
+    sprintf_s(log.message, format, args...);
     {
         std::lock_guard<std::mutex> lk(g_logsMutex);
-        g_logs.emplace_back(buffer);
+        g_logs.push_front(log);
+        if (g_logs.size() > LOG_LIMITS) {
+            g_logs.pop_back();
+        }
     }
 }
 
+#define LOG_FUNCTION_DEF(level) \
+template<class... Args> \
+static inline void Log##level(const char *format, Args &&...args) { \
+    Log<LogLevel::level>(format, args...); \
+}
+
+LOG_FUNCTION_DEF(Debug)
+
+LOG_FUNCTION_DEF(Verbose)
+
+LOG_FUNCTION_DEF(Info)
+
+LOG_FUNCTION_DEF(Warning)
+
+LOG_FUNCTION_DEF(Error)
+
 template<class Func>
-static inline void ForEachLog(Func &&f, size_t limit = 32) {
+static inline void IterateLatestLogs(Func &&func) {
     std::lock_guard<std::mutex> lk(g_logsMutex);
 
-    size_t numLogs   = std::min(g_logs.size(), limit);
-    size_t iStartLog = g_logs.size() - numLogs;
+    int i = 0;
 
-    for (int i = 0; i < numLogs; i++) {
-        f(i, g_logs[iStartLog + i]);
+    for (auto &log: g_logs) {
+        func(i++, log);
     }
 }
 

@@ -12,15 +12,23 @@ std::unique_ptr<Game> NewGame() {
 }
 
 Proto2D::Proto2D() {
+    SetTitle("テスト");
+    SetVSync(true);
+
+#define LOG_TEST(level) Log##level("This is a " #level " log.")
+    LOG_TEST(Debug);
+    LOG_TEST(Verbose);
+    LOG_TEST(Info);
+    LOG_TEST(Warning);
+    LOG_TEST(Error);
+#undef LOG_TEST
+
 #define LOG_GL_STRING(x) LogInfo(#x ": %s\n", glGetString(x))
     LOG_GL_STRING(GL_VERSION);
     LOG_GL_STRING(GL_SHADING_LANGUAGE_VERSION);
     LOG_GL_STRING(GL_VENDOR);
     LOG_GL_STRING(GL_RENDERER);
 #undef LOG_GL_STRING
-
-    SetTitle("测试2D游戏");
-    SetVSync(m_vsync);
 }
 
 Proto2D::~Proto2D() = default;
@@ -32,14 +40,13 @@ void Proto2D::OnResize(const IntVec2 &size) {
 }
 
 void Proto2D::OnTick(float deltaTime) {
-#define TEST_KEY(k) do { \
-        if (Keyboard::GetKeyDown(Keyboard::k)) { \
-            LogInfo(#k " pressed"); \
-        } else if (Keyboard::GetKeyUp(Keyboard::k)) { \
-            LogInfo(#k " released"); \
+#define TEST_KEY(key) do { \
+        if (Keyboard::GetKeyDown(Keyboard::key)) { \
+            LogInfo(#key " pressed"); \
+        } else if (Keyboard::GetKeyUp(Keyboard::key)) { \
+            LogInfo(#key " released"); \
         } \
     } while (false)
-
     TEST_KEY(W);
     TEST_KEY(A);
     TEST_KEY(S);
@@ -52,14 +59,7 @@ void Proto2D::OnTick(float deltaTime) {
     TEST_KEY(RightControl);
     TEST_KEY(Space);
     TEST_KEY(LeftWindows);
-
-    if (Keyboard::GetKey(Keyboard::LeftControl) && Keyboard::GetKeyDown(Keyboard::V)) {
-        m_vsync = !m_vsync;
-        SetVSync(m_vsync);
-    }
-
-    char buffer[LOG_MAX_CHARS];
-    sprintf_s(buffer, "fps = %.2f, size = %.0f x %.0f", 1.0f / deltaTime, m_size.x, m_size.y);
+#undef TEST_KEY
 
     static const GLfloat clearColor[] = {0.4f, 0.4f, 0.4f, 1.0f};
     glClearBufferfv(GL_COLOR, 0, clearColor);
@@ -68,9 +68,22 @@ void Proto2D::OnTick(float deltaTime) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     const float textHeight = m_textRenderer.GlyphSize().y;
-    m_textRenderer.DrawText(buffer, 0, m_size.y - textHeight);
-    ForEachLog([this, textHeight](int i, const std::string &log) {
-        m_textRenderer.DrawText(log, 0, static_cast<float>(i) * textHeight);
+
+    char buffer[LOG_MAX_CHARS];
+    sprintf_s(buffer, "fps = %.2f, size = %.0f x %.0f", 1.0f / deltaTime, m_size.x, m_size.y);
+    m_textRenderer.DrawText(buffer, 0, m_size.y - textHeight, {1, 1, 1, 1});
+
+    IterateLatestLogs([this, textHeight](int i, const LogEntry &log) {
+        static constexpr Vec4 colors[5]{
+                {0.5f, 1.0f, 0.5f, 1.0f},
+                {0.5f, 1.0f, 1.0f, 1.0f},
+                {1.0f, 1.0f, 1.0f, 1.0f},
+                {1.0f, 1.0f, 0.5f, 1.0f},
+                {1.0f, 0.5f, 0.5f, 1.0f},
+        };
+
+        const Vec4 &color = colors[static_cast<int>(log.level)];
+        m_textRenderer.DrawText(log.message, 0, static_cast<float>(i) * textHeight, color);
     });
 
     glBindVertexArray(0);

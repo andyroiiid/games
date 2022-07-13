@@ -10,15 +10,13 @@
 
 class TextRenderer {
 public:
-    static constexpr float DefaultScale = 1.0f;
-
     TextRenderer();
 
     void OnResize(const IntVec2 &size);
 
-    void DrawText(const std::string &text, float x, float y, float scale = DefaultScale);
+    void DrawText(const char *text, float x, float y, const Vec4 &color);
 
-    [[nodiscard]] Vec2 GlyphSize(float scale = DefaultScale) const { return m_glyphSize * scale; }
+    [[nodiscard]] const Vec2 &GlyphSize() const { return m_glyphSize; }
 
 private:
     struct InstanceGlyph {
@@ -45,6 +43,7 @@ private:
 
     InstancedMeshGlyph m_mesh;
     Shader2D           m_shader;
+    GLint              m_colorLocation;
 
     Texture m_texture;
     Vec2    m_glyphSize;
