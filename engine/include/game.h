@@ -6,6 +6,7 @@
 #define GAMES_GAME_H
 
 #include <memory>
+#include <string>
 #include "non_copyable.h"
 #include "math/vector.h"
 
@@ -27,6 +28,9 @@ void RequestQuit();
 
 // enable/disable vsync
 void SetVSync(bool enabled);
+
+// set window title
+void SetTitle(const std::string &title);
 
 // allocates a new Game object
 // implemented by actual game code

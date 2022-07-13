@@ -11,9 +11,11 @@
 extern std::mutex               g_logsMutex;
 extern std::vector<std::string> g_logs;
 
+static constexpr int LOG_MAX_CHARS = 1024;
+
 template<class... Args>
 static inline void LogInfo(const char *format, Args &&...args) {
-    char buffer[1024];
+    char buffer[LOG_MAX_CHARS];
     sprintf_s(buffer, format, args...);
     {
         std::lock_guard<std::mutex> lk(g_logsMutex);

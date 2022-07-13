@@ -19,6 +19,7 @@ Proto2D::Proto2D() {
     LOG_GL_STRING(GL_RENDERER);
 #undef LOG_GL_STRING
 
+    SetTitle("测试2D游戏");
     SetVSync(m_vsync);
 }
 
@@ -57,7 +58,7 @@ void Proto2D::OnTick(float deltaTime) {
         SetVSync(m_vsync);
     }
 
-    char buffer[1024];
+    char buffer[LOG_MAX_CHARS];
     sprintf_s(buffer, "fps = %.2f, size = %.0f x %.0f", 1.0f / deltaTime, m_size.x, m_size.y);
 
     static const GLfloat clearColor[] = {0.4f, 0.4f, 0.4f, 1.0f};

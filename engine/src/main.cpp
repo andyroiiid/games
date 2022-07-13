@@ -12,6 +12,17 @@
 
 static auto ENGINE_NAME = TEXT("Game Engine");
 
+HWND g_hWnd = nullptr;
+
+
+static inline wchar_t *ToWideStr(const char *multiByteStr) {
+    int wideStrLen = MultiByteToWideChar(CP_UTF8, 0, multiByteStr, -1, nullptr, 0);
+
+    auto wideStrBuffer = new wchar_t[wideStrLen];
+    MultiByteToWideChar(CP_UTF8, 0, multiByteStr, -1, wideStrBuffer, wideStrLen);
+    return wideStrBuffer;
+}
+
 void RequestQuit() {
     PostQuitMessage(0);
 }
@@ -19,6 +30,24 @@ void RequestQuit() {
 void SetVSync(bool enabled) {
     if (!GLAD_WGL_EXT_swap_control) return;
     wglSwapIntervalEXT(enabled ? (GLAD_WGL_EXT_swap_control_tear ? -1 : 1) : 0);
+}
+
+void SetTitle(const std::string &title) {
+    if (!g_hWnd) {
+        return;
+    }
+
+#ifdef UNICODE
+
+    auto wideStr = ToWideStr(title.c_str());
+    SetWindowText(g_hWnd, wideStr);
+    delete[] wideStr;
+
+#else
+
+    SetWindowText(g_hWnd, title.c_str());
+
+#endif
 }
 
 IntVec2 CalcAdjustedWindowSize(const IntVec2 &size, DWORD dwStyle) {
@@ -217,7 +246,9 @@ void MainLoop(HWND hWnd, HDC hdc) {
 }
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
-    HWND hWnd = CreateGameWindow(hInstance, nShowCmd);
+    HWND &hWnd = g_hWnd;
+
+    hWnd = CreateGameWindow(hInstance, nShowCmd);
     if (!hWnd) {
         return -1;
     }
