@@ -2,9 +2,9 @@
 // Created by Andrew Huang on 7/11/2022.
 //
 
-#include "text_renderer.h"
+#include "ui/text_renderer.h"
 
-#include "monogram_font.h"
+#include "ui/monogram_font.h"
 
 TextRenderer::TextRenderer() {
     static const std::vector<Vertex2D> vertices{

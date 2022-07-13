@@ -4,8 +4,8 @@
 
 #include "proto2d.h"
 
-#include "logging.h"
-#include "input/keyboard.h"
+#include <logging.h>
+#include <input/keyboard.h>
 
 std::unique_ptr<Game> NewGame() {
     return std::make_unique<Proto2D>();

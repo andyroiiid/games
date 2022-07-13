@@ -15,6 +15,8 @@ add_library(engine STATIC
         include/gfx/shader.h
         include/gfx/base2d.h
         include/gfx/texture.h
+        include/ui/monogram_font.h
+        include/ui/text_renderer.h
 
         src/logging.cpp
         src/main.cpp
@@ -22,7 +24,8 @@ add_library(engine STATIC
         src/system/job_system.cpp
         src/input/keyboard.cpp
         src/gfx/shader.cpp
-        src/gfx/texture.cpp)
+        src/gfx/texture.cpp
+        src/ui/text_renderer.cpp)
 
 target_compile_definitions(engine PUBLIC UNICODE WIN32_LEAN_AND_MEAN)
 

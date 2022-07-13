@@ -5,9 +5,8 @@
 #ifndef GAMES_PROTO2D_H
 #define GAMES_PROTO2D_H
 
-#include "game.h"
-#include "system/job_system.h"
-#include "text_renderer.h"
+#include <game.h>
+#include <ui/text_renderer.h>
 
 class Proto2D : public Game {
 public:
