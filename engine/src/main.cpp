@@ -246,6 +246,8 @@ void MainLoop(HWND hWnd, HDC hdc) {
 }
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
+    ImmDisableIME(-1);
+
     HWND &hWnd = g_hWnd;
 
     hWnd = CreateGameWindow(hInstance, nShowCmd);
