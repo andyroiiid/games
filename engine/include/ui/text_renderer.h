@@ -26,13 +26,8 @@ private:
         Vec4 textureRect;
 
         static void SetupVAO(GLuint vao) {
-            glEnableVertexArrayAttrib(vao, 3);
-            glVertexArrayAttribBinding(vao, 3, 1);
-            glVertexArrayAttribFormat(vao, 3, 4, GL_FLOAT, GL_FALSE, offsetof(InstanceGlyph, screenRect));
-
-            glEnableVertexArrayAttrib(vao, 4);
-            glVertexArrayAttribBinding(vao, 4, 1);
-            glVertexArrayAttribFormat(vao, 4, 4, GL_FLOAT, GL_FALSE, offsetof(InstanceGlyph, textureRect));
+            SetupVertexArrayFloatsAttrib(vao, 3, 1, 4, offsetof(InstanceGlyph, screenRect));
+            SetupVertexArrayFloatsAttrib(vao, 4, 1, 4, offsetof(InstanceGlyph, textureRect));
         }
     };
 

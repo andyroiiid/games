@@ -14,17 +14,9 @@ struct Vertex2D {
     Vec4 color;
 
     static void SetupVAO(GLuint vao) {
-        glEnableVertexArrayAttrib(vao, 0);
-        glVertexArrayAttribBinding(vao, 0, 0);
-        glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex2D, position));
-
-        glEnableVertexArrayAttrib(vao, 1);
-        glVertexArrayAttribBinding(vao, 1, 0);
-        glVertexArrayAttribFormat(vao, 1, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex2D, texCoord));
-
-        glEnableVertexArrayAttrib(vao, 2);
-        glVertexArrayAttribBinding(vao, 2, 0);
-        glVertexArrayAttribFormat(vao, 2, 4, GL_FLOAT, GL_FALSE, offsetof(Vertex2D, color));
+        SetupVertexArrayFloatsAttrib(vao, 0, 0, 2, offsetof(Vertex2D, position));
+        SetupVertexArrayFloatsAttrib(vao, 1, 0, 2, offsetof(Vertex2D, texCoord));
+        SetupVertexArrayFloatsAttrib(vao, 2, 0, 4, offsetof(Vertex2D, color));
     }
 };
 

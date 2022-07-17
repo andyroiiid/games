@@ -56,4 +56,22 @@ protected:
     Movable<GLenum>  m_mode;
 };
 
+static inline void SetupVertexArrayAttrib(
+        GLuint vao,
+        GLuint attribIndex, GLuint bindingIndex,
+        GLint size, GLenum type, GLboolean normalized, GLuint relativeOffset
+) {
+    glEnableVertexArrayAttrib(vao, attribIndex);
+    glVertexArrayAttribBinding(vao, attribIndex, bindingIndex);
+    glVertexArrayAttribFormat(vao, attribIndex, size, type, normalized, relativeOffset);
+}
+
+static inline void SetupVertexArrayFloatsAttrib(
+        GLuint vao,
+        GLuint attribIndex, GLuint bindingIndex,
+        GLint size, GLuint relativeOffset
+) {
+    SetupVertexArrayAttrib(vao, attribIndex, bindingIndex, size, GL_FLOAT, GL_FALSE, relativeOffset);
+}
+
 #endif //GAMES_MESH_H
