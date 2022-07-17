@@ -4,13 +4,12 @@
 
 #include "gfx/texture.h"
 
-Texture::Texture(int width, int height, const unsigned *data, Wrap wrap, bool filter, bool mipmaps) {
-    m_width  = width;
-    m_height = height;
+Texture::Texture(const IntVec2 &size, const unsigned *data, Wrap wrap, bool filter, bool mipmaps) {
+    m_size = size;
 
     glCreateTextures(GL_TEXTURE_2D, 1, &m_texture);
-    glTextureStorage2D(m_texture, 1, GL_RGBA8, width, height);
-    glTextureSubImage2D(m_texture, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTextureStorage2D(m_texture, 1, GL_RGBA8, size.x, size.y);
+    glTextureSubImage2D(m_texture, 0, 0, 0, size.x, size.y, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
     if (filter) {
         glTextureParameteri(m_texture, GL_TEXTURE_MIN_FILTER, mipmaps ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);

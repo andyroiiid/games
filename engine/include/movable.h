@@ -12,7 +12,12 @@
 template<typename T>
 class Movable : NonCopyable {
 public:
-    static_assert(std::is_trivial_v<T>);
+    static_assert(std::is_default_constructible_v<T>);
+    static_assert(std::is_trivially_copy_constructible_v<T>);
+    static_assert(std::is_trivially_copy_assignable_v<T>);
+    static_assert(std::is_trivially_move_constructible_v<T>);
+    static_assert(std::is_trivially_move_assignable_v<T>);
+    static_assert(std::is_swappable_v<T>);
 
     Movable() = default;
 

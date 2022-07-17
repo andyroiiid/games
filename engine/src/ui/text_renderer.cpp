@@ -47,45 +47,40 @@ void main() {
 
     m_colorLocation = m_shader.GetUniformLocation("uColor");
 
-    m_texture = Texture(MONOGRAM_FONT_WIDTH, MONOGRAM_FONT_HEIGHT, MONOGRAM_FONT_DATA);
+    m_texture = Texture(MONOGRAM_FONT_SIZE, MONOGRAM_FONT_DATA);
 
-    m_glyphSize = Vec2(
-            static_cast<float>(m_texture.Width()) * TEXCOORD_PER_GLYPH_X,
-            static_cast<float>(m_texture.Height()) * TEXCOORD_PER_GLYPH_Y
-    );
+    m_glyphSize = Vec2(m_texture.Size()) * TEXCOORD_PER_GRID;
 
     m_instances.reserve(1024);
 }
 
 void TextRenderer::OnResize(const IntVec2 &size) {
-    m_screenScale = 1.0f / Vec2(size);
+    m_screenScale       = 1.0f / Vec2(size);
+    m_glyphSizeOnScreen = m_glyphSize * m_screenScale;
 }
 
-void TextRenderer::DrawText(const char *text, const float x, const float y, const Vec4 &color) {
-    float currentX = x;
+void TextRenderer::DrawText(const char *text, const Vec2 &position, const Vec4 &color) {
+    Vec2 currentPos = position;
 
     m_instances.clear();
     for (const char *c = text; *c; c++) {
         if (isspace(*c)) {
-            currentX += m_glyphSize.x;
+            currentPos.x += m_glyphSize.x;
             continue;
         }
 
-        Vec4 screenRect{
-                currentX * m_screenScale.x,
-                y * m_screenScale.y,
-                m_glyphSize.x * m_screenScale.x,
-                m_glyphSize.y * m_screenScale.y
+        const Vec4 screenRect{currentPos * m_screenScale, m_glyphSizeOnScreen};
+
+        const Vec2 textureGrid{
+                static_cast<float>(*c % NUM_GRIDS.x),
+                static_cast<float>(*c / NUM_GRIDS.x) // NOLINT(bugprone-integer-division)
         };
-        Vec4 textureRect{
-                static_cast<float>(*c % NUM_GLYPHS_X) * TEXCOORD_PER_GLYPH_X,
-                static_cast<float>(*c / NUM_GLYPHS_X) * TEXCOORD_PER_GLYPH_Y, // NOLINT(bugprone-integer-division)
-                TEXCOORD_PER_GLYPH_X,
-                TEXCOORD_PER_GLYPH_Y
-        };
+
+        const Vec4 textureRect{textureGrid * TEXCOORD_PER_GRID, TEXCOORD_PER_GRID};
+
         m_instances.push_back({screenRect, textureRect});
 
-        currentX += m_glyphSize.x;
+        currentPos.x += m_glyphSize.x;
     }
 
     m_shader.Use();

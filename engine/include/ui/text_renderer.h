@@ -14,7 +14,7 @@ public:
 
     void OnResize(const IntVec2 &size);
 
-    void DrawText(const char *text, float x, float y, const Vec4 &color);
+    void DrawText(const char *text, const Vec2 &position, const Vec4 &color);
 
     [[nodiscard]] const Vec2 &GlyphSize() const { return m_glyphSize; }
 
@@ -36,10 +36,8 @@ private:
 
     using InstancedMeshGlyph = InstancedMesh2D<InstanceGlyph>;
 
-    static constexpr int   NUM_GLYPHS_X         = 16;
-    static constexpr int   NUM_GLYPHS_Y         = 8;
-    static constexpr float TEXCOORD_PER_GLYPH_X = 1.0f / NUM_GLYPHS_X;
-    static constexpr float TEXCOORD_PER_GLYPH_Y = 1.0f / NUM_GLYPHS_Y;
+    static constexpr IntVec2 NUM_GRIDS{16, 8};
+    static constexpr Vec2    TEXCOORD_PER_GRID = 1.0f / Vec2(NUM_GRIDS);
 
     InstancedMeshGlyph m_mesh;
     Shader2D           m_shader;
@@ -47,8 +45,8 @@ private:
 
     Texture m_texture;
     Vec2    m_glyphSize;
-
-    Vec2 m_screenScale;
+    Vec2    m_screenScale;
+    Vec2    m_glyphSizeOnScreen;
 
     std::vector<InstanceGlyph> m_instances;
 };

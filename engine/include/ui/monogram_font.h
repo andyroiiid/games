@@ -5,9 +5,9 @@
 #ifndef GAMES_MONOGRAM_FONT_H
 #define GAMES_MONOGRAM_FONT_H
 
-static constexpr int MONOGRAM_FONT_WIDTH = 128;
+#include "math/vector.h"
 
-static constexpr int MONOGRAM_FONT_HEIGHT = 128;
+static constexpr IntVec2 MONOGRAM_FONT_SIZE{128, 128};
 
 static const unsigned MONOGRAM_FONT_DATA[]{
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

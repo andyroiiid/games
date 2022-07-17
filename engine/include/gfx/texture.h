@@ -8,6 +8,7 @@
 #include <glad/gl.h>
 
 #include "movable.h"
+#include "math/vector.h"
 
 class Texture {
 public:
@@ -25,9 +26,8 @@ public:
     Texture &operator=(Texture &&) noexcept = default;
 
     Texture(
-            int width,
-            int height,
-            const unsigned *data, // rgba32
+            const IntVec2 &size,
+            const unsigned *data,
             Wrap wrap = Wrap::Repeat,
             bool filter = false,
             bool mipmaps = false
@@ -35,16 +35,13 @@ public:
 
     ~Texture();
 
-    [[nodiscard]] inline int Width() const { return m_width; }
-
-    [[nodiscard]] inline int Height() const { return m_height; }
+    [[nodiscard]] inline const IntVec2 &Size() const { return m_size; }
 
     void Bind(GLuint unit);
 
 private:
-    Movable<int>    m_width;
-    Movable<int>    m_height;
-    Movable<GLuint> m_texture;
+    Movable<IntVec2> m_size;
+    Movable<GLuint>  m_texture;
 };
 
 #endif //GAMES_TEXTURE_H

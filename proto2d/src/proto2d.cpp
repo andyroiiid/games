@@ -71,7 +71,7 @@ void Proto2D::OnTick(float deltaTime) {
 
     char buffer[LOG_MAX_CHARS];
     sprintf_s(buffer, "fps = %.2f, size = %.0f x %.0f", 1.0f / deltaTime, m_size.x, m_size.y);
-    m_textRenderer.DrawText(buffer, 0, m_size.y - textHeight, {1, 1, 1, 1});
+    m_textRenderer.DrawText(buffer, {0, m_size.y - textHeight}, {1, 1, 1, 1});
 
     IterateLatestLogs([this, textHeight](int i, const LogEntry &log) {
         static constexpr Vec4 colors[5]{
@@ -83,7 +83,7 @@ void Proto2D::OnTick(float deltaTime) {
         };
 
         const Vec4 &color = colors[static_cast<int>(log.level)];
-        m_textRenderer.DrawText(log.message, 0, static_cast<float>(i) * textHeight, color);
+        m_textRenderer.DrawText(log.message, {0, static_cast<float>(i) * textHeight}, color);
     });
 
     glBindVertexArray(0);

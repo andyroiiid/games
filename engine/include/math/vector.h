@@ -61,6 +61,10 @@ struct Vec2 {
 
     constexpr Vec2 operator/(const float f) const { return {x / f, y / f}; }
 
+    constexpr Vec2 operator*(const Vec2 &v) const { return {x * v.x, y * v.y}; }
+
+    constexpr Vec2 operator/(const Vec2 &v) const { return {x / v.x, y / v.y}; }
+
     // vector math
 
     [[nodiscard]] constexpr float Dot(const Vec2 &v) const { return x * v.x + y * v.y; }
@@ -92,6 +96,10 @@ struct Vec3 {
     constexpr explicit Vec3(const float v) : x(v), y(v), z(v) {}
 
     constexpr Vec3(const float x, const float y, const float z) : x(x), y(y), z(z) {}
+
+    constexpr Vec3(const Vec2 &xy, const float z) : x(xy.x), y(xy.y), z(z) {}
+
+    constexpr Vec3(const float x, const Vec2 &yz) : x(x), y(yz.x), z(yz.y) {}
 
     // constants
 
@@ -129,6 +137,10 @@ struct Vec3 {
 
     constexpr Vec3 operator/(const float f) const { return {x / f, y / f, z / f}; }
 
+    constexpr Vec3 operator*(const Vec3 &v) const { return {x * v.x, y * v.y, z * v.z}; }
+
+    constexpr Vec3 operator/(const Vec3 &v) const { return {x / v.x, y / v.y, z / v.z}; }
+
     // vector math
 
     [[nodiscard]] constexpr float Dot(const Vec3 &v) const { return x * v.x + y * v.y + z * v.z; }
@@ -161,6 +173,18 @@ struct alignas(16) Vec4 {
     constexpr explicit Vec4(const float v) : x(v), y(v), z(v), w(v) {}
 
     constexpr Vec4(const float x, const float y, const float z, const float w) : x(x), y(y), z(z), w(w) {}
+
+    constexpr Vec4(const Vec2 &xy, const float z, const float w) : x(xy.x), y(xy.y), z(z), w(w) {}
+
+    constexpr Vec4(const float x, const Vec2 &yz, const float w) : x(x), y(yz.x), z(yz.y), w(w) {}
+
+    constexpr Vec4(const float x, const float y, const Vec2 &zw) : x(x), y(y), z(zw.x), w(zw.y) {}
+
+    constexpr Vec4(const Vec2 &xy, const Vec2 &zw) : x(xy.x), y(xy.y), z(zw.x), w(zw.y) {}
+
+    constexpr Vec4(const Vec3 &xyz, const float w) : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
+
+    constexpr Vec4(const float x, const Vec3 &yzw) : x(x), y(yzw.x), z(yzw.y), w(yzw.z) {}
 
     // constants
 
@@ -199,6 +223,10 @@ struct alignas(16) Vec4 {
     constexpr Vec4 operator*(const float f) const { return {x * f, y * f, z * f, w * f}; }
 
     constexpr Vec4 operator/(const float f) const { return {x / f, y / f, z / f, w / f}; }
+
+    constexpr Vec4 operator*(const Vec4 &v) const { return {x * v.x, y * v.y, z * v.z, w * v.w}; }
+
+    constexpr Vec4 operator/(const Vec4 &v) const { return {x / v.x, y / v.y, z / v.z, w * v.w}; }
 
     // vector math
 
