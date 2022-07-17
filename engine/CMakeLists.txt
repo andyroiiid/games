@@ -32,4 +32,4 @@ target_compile_definitions(engine PUBLIC UNICODE WIN32_LEAN_AND_MEAN)
 
 target_include_directories(engine PUBLIC include)
 
-target_link_libraries(engine PUBLIC Imm32 Opengl32 glad)
+target_link_libraries(engine PUBLIC Imm32 Opengl32 glad lua)

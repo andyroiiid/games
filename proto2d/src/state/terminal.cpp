@@ -9,8 +9,40 @@
 
 #include "state/log_viewer.h"
 
+template<LogLevel level>
+static int LuaLog(lua_State *L) {
+    int n = lua_gettop(L);
+
+    for (int i = 1; i <= n; i++) {
+        Log<level>("%s", luaL_tolstring(L, i, nullptr));
+    }
+
+    return 0;
+}
+
+static const luaL_Reg LuaLogFunctions[] = {
+        {"debug", LuaLog<LogLevel::Debug>},
+        {"verbose", LuaLog<LogLevel::Verbose>},
+        {"info", LuaLog<LogLevel::Info>},
+        {"warning", LuaLog<LogLevel::Warning>},
+        {"error", LuaLog<LogLevel::Error>},
+        {nullptr, nullptr}
+};
+
 Terminal::Terminal() {
     SetTitle("Terminal");
+
+    L = luaL_newstate();
+    luaL_openlibs(L);
+
+    luaL_newlib(L, LuaLogFunctions);
+    lua_setglobal(L, "log");
+
+    lua_register(L, "print", LuaLog<LogLevel::Info>);
+}
+
+Terminal::~Terminal() {
+    lua_close(L);
 }
 
 void Terminal::OnResize(const IntVec2 &size) {
@@ -105,7 +137,9 @@ Proto2D::StateBuilder Terminal::Update(float deltaTime) {
 
         if (Keyboard::GetKeyDown(Keyboard::Enter)) {
             m_input.push_back('\0');
-            LogInfo("%s", m_input.data());
+            if (luaL_dostring(L, m_input.data()) != LUA_OK) {
+                LogError("lua error: %s", lua_tostring(L, -1));
+            }
             m_input.clear();
         }
     }

@@ -8,10 +8,13 @@
 #include "proto2d.h"
 
 #include <ui/text_renderer.h>
+#include <lua.hpp>
 
 class Terminal : public Proto2D::State {
 public:
     Terminal();
+
+    ~Terminal() override;
 
     void OnResize(const IntVec2 &size) override;
 
@@ -25,6 +28,8 @@ private:
     TextRenderer m_textRenderer;
 
     std::vector<char> m_input;
+
+    lua_State *L = nullptr;
 };
 
 #endif //GAMES_TERMINAL_H
