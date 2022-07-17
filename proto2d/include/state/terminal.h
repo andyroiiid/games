@@ -13,8 +13,6 @@ class Terminal : public Proto2D::State {
 public:
     Terminal();
 
-    ~Terminal() override;
-
     void OnResize(const IntVec2 &size) override;
 
     Proto2D::StateBuilder Update(float deltaTime) override;

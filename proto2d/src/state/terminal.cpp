@@ -11,11 +11,6 @@
 
 Terminal::Terminal() {
     SetTitle("Terminal");
-    LogInfo("constructed Terminal");
-}
-
-Terminal::~Terminal() {
-    LogInfo("destructed Terminal");
 }
 
 void Terminal::OnResize(const IntVec2 &size) {
@@ -110,7 +105,7 @@ Proto2D::StateBuilder Terminal::Update(float deltaTime) {
 
         if (Keyboard::GetKeyDown(Keyboard::Enter)) {
             m_input.push_back('\0');
-            LogVerbose("%s", m_input.data());
+            LogInfo("%s", m_input.data());
             m_input.clear();
         }
     }

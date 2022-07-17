@@ -54,7 +54,7 @@ void main() {
     m_texture = Texture(MONOGRAM_FONT_SIZE, MONOGRAM_FONT_DATA);
 
     GridLayout textureGrids = GridLayout(m_texture.Size(), {16, 8});
-    m_fontSize = textureGrids.GetGridSize();
+    m_fontSize = textureGrids.GetGridSize() * 2.0f;
     for (int i = 0; i < NUM_CHARS; i++) {
         m_textureGrids[i] = textureGrids.GetGridRect(i);
     }

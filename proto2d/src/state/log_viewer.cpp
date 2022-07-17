@@ -10,11 +10,6 @@
 
 LogViewer::LogViewer() {
     SetTitle("View Logs");
-    LogInfo("constructed LogViewer");
-}
-
-LogViewer::~LogViewer() {
-    LogInfo("destructed LogViewer");
 }
 
 void LogViewer::OnResize(const IntVec2 &size) {
@@ -26,6 +21,14 @@ void LogViewer::OnResize(const IntVec2 &size) {
 Proto2D::StateBuilder LogViewer::Update(float deltaTime) {
     m_fps = 1.0f / deltaTime;
 
+    if (Keyboard::GetKeyDown(Keyboard::Enter)) {
+        LogDebug("This is a debug message.");
+        LogVerbose("This is a verbose message.");
+        LogInfo("This is a info message.");
+        LogWarning("This is a warning message.");
+        LogError("This is a error message.");
+    }
+
     if (Keyboard::GetKeyDown(Keyboard::Tab)) {
         return []() -> std::unique_ptr<Proto2D::State> {
             return std::make_unique<Terminal>();
@@ -36,7 +39,7 @@ Proto2D::StateBuilder LogViewer::Update(float deltaTime) {
 }
 
 void LogViewer::Draw() {
-    static const GLfloat clearColor[4]{0.4f, 0.4f, 0.4f, 1.0f};
+    static const GLfloat clearColor[4]{0.4f, 0.6f, 0.9f, 1.0f};
     glClearBufferfv(GL_COLOR, 0, clearColor);
 
     glEnable(GL_BLEND);

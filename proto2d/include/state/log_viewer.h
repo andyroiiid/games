@@ -13,8 +13,6 @@ class LogViewer : public Proto2D::State {
 public:
     LogViewer();
 
-    ~LogViewer() override;
-
     void OnResize(const IntVec2 &size) override;
 
     Proto2D::StateBuilder Update(float deltaTime) override;
