@@ -7,6 +7,7 @@
 
 #include "gfx/base2d.h"
 #include "gfx/texture.h"
+#include "math/grid_layout.h"
 
 class TextRenderer {
 public:
@@ -16,7 +17,7 @@ public:
 
     void DrawText(const char *text, const Vec2 &position, const Vec4 &color);
 
-    [[nodiscard]] const Vec2 &GlyphSize() const { return m_glyphSize; }
+    [[nodiscard]] const Vec2 &FontSize() const { return m_textureGrids.GetGridSize(); }
 
 private:
     struct InstanceGlyph {
@@ -36,17 +37,14 @@ private:
 
     using InstancedMeshGlyph = InstancedMesh2D<InstanceGlyph>;
 
-    static constexpr IntVec2 NUM_GRIDS{16, 8};
-    static constexpr Vec2    TEXCOORD_PER_GRID = 1.0f / Vec2(NUM_GRIDS);
-
     InstancedMeshGlyph m_mesh;
     Shader2D           m_shader;
     GLint              m_colorLocation;
 
-    Texture m_texture;
-    Vec2    m_glyphSize;
-    Vec2    m_screenScale;
-    Vec2    m_glyphSizeOnScreen;
+    Texture    m_texture;
+    GridLayout m_textureGrids;
+    Vec2       m_screenScale;
+    Vec2       m_fontSizeOnScreen;
 
     std::vector<InstanceGlyph> m_instances;
 };

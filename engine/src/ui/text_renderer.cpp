@@ -6,7 +6,9 @@
 
 #include "ui/monogram_font.h"
 
-TextRenderer::TextRenderer() {
+TextRenderer::TextRenderer()
+        : m_texture(MONOGRAM_FONT_SIZE, MONOGRAM_FONT_DATA),
+          m_textureGrids(m_texture.Size(), {16, 8}) {
     static const std::vector<Vertex2D> vertices{
             {{0, 0}, {0, 0}, {1, 1, 1, 1}},
             {{1, 0}, {1, 0}, {1, 1, 1, 1}},
@@ -47,16 +49,12 @@ void main() {
 
     m_colorLocation = m_shader.GetUniformLocation("uColor");
 
-    m_texture = Texture(MONOGRAM_FONT_SIZE, MONOGRAM_FONT_DATA);
-
-    m_glyphSize = Vec2(m_texture.Size()) * TEXCOORD_PER_GRID;
-
     m_instances.reserve(1024);
 }
 
 void TextRenderer::OnResize(const IntVec2 &size) {
-    m_screenScale       = 1.0f / Vec2(size);
-    m_glyphSizeOnScreen = m_glyphSize * m_screenScale;
+    m_screenScale      = 1.0f / Vec2(size);
+    m_fontSizeOnScreen = FontSize() * m_screenScale;
 }
 
 void TextRenderer::DrawText(const char *text, const Vec2 &position, const Vec4 &color) {
@@ -65,22 +63,13 @@ void TextRenderer::DrawText(const char *text, const Vec2 &position, const Vec4 &
     m_instances.clear();
     for (const char *c = text; *c; c++) {
         if (isspace(*c)) {
-            currentPos.x += m_glyphSize.x;
+            currentPos.x += FontSize().x;
             continue;
         }
 
-        const Vec4 screenRect{currentPos * m_screenScale, m_glyphSizeOnScreen};
-
-        const Vec2 textureGrid{
-                static_cast<float>(*c % NUM_GRIDS.x),
-                static_cast<float>(*c / NUM_GRIDS.x) // NOLINT(bugprone-integer-division)
-        };
-
-        const Vec4 textureRect{textureGrid * TEXCOORD_PER_GRID, TEXCOORD_PER_GRID};
-
-        m_instances.push_back({screenRect, textureRect});
-
-        currentPos.x += m_glyphSize.x;
+        const Vec4 screenRect{currentPos * m_screenScale, m_fontSizeOnScreen};
+        m_instances.push_back({screenRect, m_textureGrids.GetGridRect(*c)});
+        currentPos.x += FontSize().x;
     }
 
     m_shader.Use();

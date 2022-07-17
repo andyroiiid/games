@@ -67,7 +67,7 @@ void Proto2D::OnTick(float deltaTime) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    const float textHeight = m_textRenderer.GlyphSize().y;
+    const float textHeight = m_textRenderer.FontSize().y;
 
     char buffer[LOG_MAX_CHARS];
     sprintf_s(buffer, "fps = %.2f, size = %.0f x %.0f", 1.0f / deltaTime, m_size.x, m_size.y);

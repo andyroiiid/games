@@ -15,6 +15,7 @@ add_library(engine STATIC
         include/gfx/shader.h
         include/gfx/base2d.h
         include/gfx/texture.h
+        include/math/grid_layout.h
         include/ui/monogram_font.h
         include/ui/text_renderer.h
 
