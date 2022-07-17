@@ -6,7 +6,6 @@
 #define GAMES_PROTO2D_H
 
 #include <game.h>
-#include <ui/text_renderer.h>
 
 class Proto2D : public Game {
 public:
@@ -20,9 +19,27 @@ public:
 
     void OnClose() override;
 
+    struct State;
+
+    typedef std::unique_ptr<State> (*StateBuilder)();
+
+    struct State : NonCopyable {
+        virtual ~State() = default;
+
+        virtual void OnResize(const IntVec2 &size) {}
+
+        virtual StateBuilder Update(float deltaTime) { return nullptr; }
+
+        virtual void Draw() {}
+    };
+
 private:
-    Vec2         m_size;
-    TextRenderer m_textRenderer;
+    void Update(float deltaTime);
+
+    void Draw();
+
+    IntVec2                m_size;
+    std::unique_ptr<State> m_state;
 };
 
 #endif //GAMES_PROTO2D_H

@@ -103,3 +103,7 @@ void Keyboard::InternalUpdate() {
 
     memcpy(m_lastState, m_state, sizeof(State));
 }
+
+bool Keyboard::GetCapsLock() {
+    return (GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+}

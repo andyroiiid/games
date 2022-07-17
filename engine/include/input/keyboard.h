@@ -239,6 +239,8 @@ public:
 
     static bool GetKeyUp(Key key) { return IsTrue(Get().m_released, key); }
 
+    static bool GetCapsLock();
+
 private:
     friend class Singleton<Keyboard>;
 
