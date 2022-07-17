@@ -5,9 +5,10 @@
 #ifndef GAMES_TEXT_RENDERER_H
 #define GAMES_TEXT_RENDERER_H
 
+#include <array>
+
 #include "gfx/base2d.h"
 #include "gfx/texture.h"
-#include "math/grid_layout.h"
 
 class TextRenderer {
 public:
@@ -15,9 +16,9 @@ public:
 
     void OnResize(const IntVec2 &size);
 
-    void DrawText(const char *text, const Vec2 &position, const Vec4 &color);
+    void DrawText(const std::string_view &text, const Vec2 &position, const Vec4 &color);
 
-    [[nodiscard]] const Vec2 &FontSize() const { return m_textureGrids.GetGridSize(); }
+    [[nodiscard]] const Vec2 &FontSize() const { return m_fontSize; }
 
 private:
     struct InstanceGlyph {
@@ -37,14 +38,18 @@ private:
 
     using InstancedMeshGlyph = InstancedMesh2D<InstanceGlyph>;
 
+    static constexpr int NUM_CHARS = CHAR_MAX + 1;
+
     InstancedMeshGlyph m_mesh;
     Shader2D           m_shader;
     GLint              m_colorLocation;
 
-    Texture    m_texture;
-    GridLayout m_textureGrids;
-    Vec2       m_screenScale;
-    Vec2       m_fontSizeOnScreen;
+    Texture                     m_texture;
+    Vec2                        m_fontSize;
+    std::array<Vec4, NUM_CHARS> m_textureGrids;
+
+    Vec2 m_screenScale;
+    Vec2 m_fontSizeOnScreen;
 
     std::vector<InstanceGlyph> m_instances;
 };

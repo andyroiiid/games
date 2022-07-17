@@ -4,11 +4,10 @@
 
 #include "ui/text_renderer.h"
 
+#include "math/grid_layout.h"
 #include "ui/monogram_font.h"
 
-TextRenderer::TextRenderer()
-        : m_texture(MONOGRAM_FONT_SIZE, MONOGRAM_FONT_DATA),
-          m_textureGrids(m_texture.Size(), {16, 8}) {
+TextRenderer::TextRenderer() {
     static const std::vector<Vertex2D> vertices{
             {{0, 0}, {0, 0}, {1, 1, 1, 1}},
             {{1, 0}, {1, 0}, {1, 1, 1, 1}},
@@ -49,6 +48,14 @@ void main() {
 
     m_colorLocation = m_shader.GetUniformLocation("uColor");
 
+    m_texture = Texture(MONOGRAM_FONT_SIZE, MONOGRAM_FONT_DATA);
+
+    GridLayout textureGrids = GridLayout(m_texture.Size(), {16, 8});
+    m_fontSize = textureGrids.GetGridSize();
+    for (int i = 0; i < NUM_CHARS; i++) {
+        m_textureGrids[i] = textureGrids.GetGridRect(i);
+    }
+
     m_instances.reserve(1024);
 }
 
@@ -57,18 +64,18 @@ void TextRenderer::OnResize(const IntVec2 &size) {
     m_fontSizeOnScreen = FontSize() * m_screenScale;
 }
 
-void TextRenderer::DrawText(const char *text, const Vec2 &position, const Vec4 &color) {
+void TextRenderer::DrawText(const std::string_view &text, const Vec2 &position, const Vec4 &color) {
     Vec2 currentPos = position;
 
     m_instances.clear();
-    for (const char *c = text; *c; c++) {
-        if (isspace(*c)) {
+    for (const char c: text) {
+        if (isspace(c)) {
             currentPos.x += FontSize().x;
             continue;
         }
 
         const Vec4 screenRect{currentPos * m_screenScale, m_fontSizeOnScreen};
-        m_instances.push_back({screenRect, m_textureGrids.GetGridRect(*c)});
+        m_instances.push_back({screenRect, m_textureGrids[c]});
         currentPos.x += FontSize().x;
     }
 
