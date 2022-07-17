@@ -37,14 +37,12 @@ private:
 
     InstancedMeshGlyph m_mesh;
     Shader2D           m_shader;
+    GLint              m_screenSizeLocation;
     GLint              m_colorLocation;
 
     Texture                     m_texture;
     Vec2                        m_fontSize;
     std::array<Vec4, NUM_CHARS> m_textureGrids;
-
-    Vec2 m_screenScale;
-    Vec2 m_fontSizeOnScreen;
 
     std::vector<InstanceGlyph> m_instances;
 };

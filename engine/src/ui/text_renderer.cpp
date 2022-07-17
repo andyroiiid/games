@@ -24,10 +24,12 @@ layout(location = 4) in vec4 iTextureRect;
 layout(location = 0) out vec2 vTexCoord;
 layout(location = 1) out vec4 vColor;
 
-layout(location = 0) uniform vec4 uColor;
+layout(location = 0) uniform vec2 uScreenSize;
+layout(location = 1) uniform vec4 uColor;
 
 void main() {
-    vec2 position = iScreenRect.xy + iScreenRect.zw * aPosition;
+    vec2 position = iScreenRect.xy + iScreenRect.zw * aPosition; // pixel position
+    position /= uScreenSize;
     position = position * 2 - 1; // map from 0~1 to -1~1
     gl_Position = vec4(position, 0, 1);
     vTexCoord = iTextureRect.xy + iTextureRect.zw * aTexCoord;
@@ -46,7 +48,8 @@ void main() {
 }
 )GLSL");
 
-    m_colorLocation = m_shader.GetUniformLocation("uColor");
+    m_screenSizeLocation = m_shader.GetUniformLocation("uScreenSize");
+    m_colorLocation      = m_shader.GetUniformLocation("uColor");
 
     m_texture = Texture(MONOGRAM_FONT_SIZE, MONOGRAM_FONT_DATA);
 
@@ -60,8 +63,7 @@ void main() {
 }
 
 void TextRenderer::OnResize(const IntVec2 &size) {
-    m_screenScale      = 1.0f / Vec2(size);
-    m_fontSizeOnScreen = FontSize() * m_screenScale;
+    m_shader.SetUniform(m_screenSizeLocation, Vec2(size));
 }
 
 void TextRenderer::DrawText(const std::string_view &text, const Vec2 &position, const Vec4 &color) {
@@ -74,8 +76,7 @@ void TextRenderer::DrawText(const std::string_view &text, const Vec2 &position, 
             continue;
         }
 
-        const Vec4 screenRect{currentPos * m_screenScale, m_fontSizeOnScreen};
-        m_instances.push_back({screenRect, m_textureGrids[c]});
+        m_instances.push_back({{currentPos, FontSize()}, m_textureGrids[c]});
         currentPos.x += FontSize().x;
     }
 
