@@ -89,7 +89,7 @@ static const KeyToChar INPUT_MAPPINGS[] = {
         {Keyboard::OemMinus,         '-',  '-',  '_', '_'},
         {Keyboard::OemPeriod,        '.',  '.',  '>', '>'},
         {Keyboard::OemQuestion,      '/',  '/',  '?', '?'},
-        {Keyboard::OemTilde,         '`',  '`',  '~', '~'},
+//        {Keyboard::OemTilde,         '`',  '`',  '~', '~'},
 
         {Keyboard::OemOpenBrackets,  '[',  '[',  '{', '{'},
         {Keyboard::OemPipe,          '\\', '\\', '|', '|'},

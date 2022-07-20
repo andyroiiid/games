@@ -67,4 +67,8 @@ static inline void IterateLatestLogs(Func &&func) {
     }
 }
 
+static inline void ClearLogs() {
+    g_logs.clear();
+}
+
 #endif //GAMES_LOG_H
