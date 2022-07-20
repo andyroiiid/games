@@ -9,6 +9,7 @@ add_library(engine STATIC
         include/system/timer.h
         include/system/job_system.h
         include/input/keyboard.h
+        include/input/lua_console.h
         include/math/vector.h
         include/gfx/mesh.h
         include/gfx/instanced_mesh.h
@@ -24,6 +25,7 @@ add_library(engine STATIC
         src/system/timer.cpp
         src/system/job_system.cpp
         src/input/keyboard.cpp
+        src/input/lua_console.cpp
         src/gfx/shader.cpp
         src/gfx/texture.cpp
         src/ui/text_renderer.cpp)

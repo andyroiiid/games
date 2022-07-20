@@ -1,54 +1,37 @@
 //
-// Created by andyroiiid on 7/16/2022.
+// Created by Andrew Huang on 7/20/2022.
 //
 
-#include "state/terminal.h"
+#include "input/lua_console.h"
 
-#include <input/keyboard.h>
-#include <logging.h>
+#include <lua.hpp>
 
-#include "state/log_viewer.h"
+#include "logging.h"
+#include "input/keyboard.h"
 
-template<LogLevel level>
-static int LuaLog(lua_State *L) {
-    int n = lua_gettop(L);
+static int LuaPrint(lua_State *L) {
+    const int n = lua_gettop(L);
 
     for (int i = 1; i <= n; i++) {
-        Log<level>("%s", luaL_tolstring(L, i, nullptr));
+        LogInfo("%s", luaL_tolstring(L, i, nullptr));
     }
 
     return 0;
 }
 
-static const luaL_Reg LuaLogFunctions[] = {
-        {"debug", LuaLog<LogLevel::Debug>},
-        {"verbose", LuaLog<LogLevel::Verbose>},
-        {"info", LuaLog<LogLevel::Info>},
-        {"warning", LuaLog<LogLevel::Warning>},
-        {"error", LuaLog<LogLevel::Error>},
-        {nullptr, nullptr}
-};
-
-Terminal::Terminal() {
-    SetTitle("Terminal");
-
+LuaConsole::LuaConsole() {
     L = luaL_newstate();
     luaL_openlibs(L);
 
-    luaL_newlib(L, LuaLogFunctions);
-    lua_setglobal(L, "log");
-
-    lua_register(L, "print", LuaLog<LogLevel::Info>);
+    lua_register(L, "print", LuaPrint);
 }
 
-Terminal::~Terminal() {
+LuaConsole::~LuaConsole() {
     lua_close(L);
 }
 
-void Terminal::OnResize(const IntVec2 &size) {
-    m_size = Vec2(size);
-    glViewport(0, 0, size.x, size.y);
-    m_textRenderer.OnResize(size);
+void LuaConsole::SetGlobalFunc(const char *name, lua_CFunction function) {
+    lua_register(L, name, function);
 }
 
 struct KeyToChar {
@@ -114,9 +97,7 @@ static const KeyToChar INPUT_MAPPINGS[] = {
         {Keyboard::OemQuotes,        '\'', '\'', '"', '"'},
 };
 
-Proto2D::StateBuilder Terminal::Update(float deltaTime) {
-    m_fps = 1.0f / deltaTime;
-
+void LuaConsole::ProcessInput() {
     const bool caps  = Keyboard::GetCapsLock();
     const bool shift = Keyboard::GetKey(Keyboard::LeftShift) || Keyboard::GetKey(Keyboard::RightShift);
 
@@ -138,53 +119,9 @@ Proto2D::StateBuilder Terminal::Update(float deltaTime) {
         if (Keyboard::GetKeyDown(Keyboard::Enter)) {
             m_input.push_back('\0');
             if (luaL_dostring(L, m_input.data()) != LUA_OK) {
-                LogError("lua error: %s", lua_tostring(L, -1));
+                LogError("%s", lua_tostring(L, -1));
             }
             m_input.clear();
         }
     }
-
-    if (Keyboard::GetKeyDown(Keyboard::Tab)) {
-        return []() -> std::unique_ptr<Proto2D::State> {
-            return std::make_unique<LogViewer>();
-        };
-    } else {
-        return nullptr;
-    }
-}
-
-void Terminal::Draw() {
-    static const GLfloat clearColor[4]{0.2f, 0.2f, 0.2f, 1.0f};
-    glClearBufferfv(GL_COLOR, 0, clearColor);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    const float textHeight = m_textRenderer.FontSize().y;
-
-    char buffer[LOG_MAX_CHARS];
-    sprintf_s(buffer, "fps = %.2f, size = %.0f x %.0f", m_fps, m_size.x, m_size.y);
-    m_textRenderer.DrawText(buffer, {0, m_size.y - textHeight}, {1, 1, 1, 1});
-
-    m_textRenderer.DrawText({m_input.data(), m_input.size()}, {0, 0}, {1, 0.5, 0, 1});
-
-    IterateLatestLogs([this, textHeight](int i, const LogEntry &log) {
-        static constexpr Vec4 colors[5]{
-                {0.5f, 1.0f, 0.5f, 1.0f},
-                {0.5f, 1.0f, 1.0f, 1.0f},
-                {1.0f, 1.0f, 1.0f, 1.0f},
-                {1.0f, 1.0f, 0.5f, 1.0f},
-                {1.0f, 0.5f, 0.5f, 1.0f},
-        };
-
-        const Vec4 &color = colors[static_cast<int>(log.level)];
-        m_textRenderer.DrawText(log.message, {0, static_cast<float>(i + 1) * textHeight}, color);
-    });
-
-    glBindVertexArray(0);
-    glBindTextureUnit(0, 0);
-    glUseProgram(0);
-
-    glBlendFunc(GL_ONE, GL_ZERO);
-    glDisable(GL_BLEND);
 }
