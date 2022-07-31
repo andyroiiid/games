@@ -6,7 +6,7 @@
 #define GAMES_PROTO2D_H
 
 #include <game.h>
-#include <input/lua_console.h>
+#include <lua/lua_console.h>
 #include <ui/text_renderer.h>
 
 class Proto2D : public Game {
@@ -35,7 +35,7 @@ private:
 
     Mesh2D m_mesh;
 
-    bool         m_consoleActivate = false;
+    bool         m_consoleActivate = true;
     LuaConsole   m_console;
     TextRenderer m_textRenderer;
 

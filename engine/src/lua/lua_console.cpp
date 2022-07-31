@@ -2,7 +2,7 @@
 // Created by Andrew Huang on 7/20/2022.
 //
 
-#include "input/lua_console.h"
+#include "lua/lua_console.h"
 
 #include <lua.hpp>
 
@@ -28,6 +28,10 @@ LuaConsole::LuaConsole() {
 
 LuaConsole::~LuaConsole() {
     lua_close(L);
+}
+
+void LuaConsole::DoFile(const char *filename) {
+    luaL_dofile(L, filename);
 }
 
 void LuaConsole::SetGlobalFunc(const char *name, lua_CFunction function) {

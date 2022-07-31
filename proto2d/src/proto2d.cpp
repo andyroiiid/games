@@ -51,10 +51,7 @@ void main() {
     };
     m_mesh = Mesh2D(vertices, GL_TRIANGLE_STRIP);
 
-    m_console.SetGlobalFunc("quit", [](lua_State *L) {
-        RequestQuit();
-        return 0;
-    });
+    m_console.DoFile("assets/test.lua");
 }
 
 Proto2D::~Proto2D() = default;
@@ -81,7 +78,6 @@ void Proto2D::OnClose() {
 void Proto2D::Update(float deltaTime) {
     if (Keyboard::GetKeyDown(Keyboard::OemTilde)) {
         if (m_consoleActivate) {
-            ClearLogs();
             m_consoleActivate = false;
         } else {
             m_consoleActivate = true;

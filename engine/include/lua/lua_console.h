@@ -19,6 +19,8 @@ public:
 
     ~LuaConsole();
 
+    void DoFile(const char *filename);
+
     void SetGlobalFunc(const char *name, lua_CFunction function);
 
     void ProcessInput();

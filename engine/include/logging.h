@@ -9,7 +9,6 @@
 #include <deque>
 
 static constexpr int LOG_MAX_CHARS = 512;
-static constexpr int LOG_LIMITS    = 16;
 
 enum class LogLevel : uint8_t {
     Debug,
@@ -31,13 +30,8 @@ template<LogLevel level, class... Args>
 static inline void Log(const char *format, Args &&...args) {
     LogEntry log{level};
     sprintf_s(log.message, format, args...);
-    {
-        std::lock_guard<std::mutex> lk(g_logsMutex);
-        g_logs.push_front(log);
-        if (g_logs.size() > LOG_LIMITS) {
-            g_logs.pop_back();
-        }
-    }
+    std::lock_guard<std::mutex> lk(g_logsMutex);
+    g_logs.push_front(log);
 }
 
 #define LOG_FUNCTION_DEF(level) \
@@ -57,14 +51,12 @@ LOG_FUNCTION_DEF(Warning)
 LOG_FUNCTION_DEF(Error)
 
 template<class Func>
-static inline void IterateLatestLogs(Func &&func) {
+static inline void IterateLatestLogs(Func &&func, size_t numLogs = 16) {
     std::lock_guard<std::mutex> lk(g_logsMutex);
 
-    int i = 0;
-
-    for (auto &log: g_logs) {
-        func(i++, log);
-    }
+    numLogs = std::min(g_logs.size(), numLogs);
+    for (int i = 0; i < numLogs; i++)
+        func(i, g_logs[i]);
 }
 
 static inline void ClearLogs() {
